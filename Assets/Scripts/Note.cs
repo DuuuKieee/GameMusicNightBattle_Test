@@ -1,18 +1,13 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public class Note : MonoBehaviour
+[System.Serializable]
+public class Note
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    public float timeAppear;
+    public int noteID;
+    public float duration;
+}
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+[System.Serializable]
+public class NoteList
+{
+    public Note[] list;
 }
