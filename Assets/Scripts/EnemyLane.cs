@@ -29,6 +29,11 @@ public class EnemyLane : MonoBehaviour
 
     public void SetTimeStamps(Note[] noteList)
     {
+        spawnIndex = 0;
+        inputIndex = 0;
+        startTime = Time.time;
+        timeStamps.Clear();
+        notes.Clear();
         foreach (var note in noteList)
         {
             if (NoteLoader.Instance.uniqueNoteIDs.ToList().IndexOf(note.noteID) == noteRetrictions)
@@ -46,7 +51,7 @@ public class EnemyLane : MonoBehaviour
         {
             if (currentTime > timeStamps[spawnIndex])
             {
-                SpawnNote(noteLoader.notes.list[spawnIndex]);
+                SpawnNote();
                 spawnIndex++;
             }
         }
@@ -57,17 +62,23 @@ public class EnemyLane : MonoBehaviour
 
             if (timeDifference <= marginOfError)
             {
-                Destroy(notes[inputIndex].gameObject);
+                DespawnNote(notes[inputIndex].gameObject);
                 playerAnimator.Play(playerAnimatorParameter);
                 inputIndex++;
             }
         }
     }
-    void SpawnNote(Note note)
+    public void SpawnNote()
     {
-        GameObject newNote = Instantiate(notePrefab, this.transform.position, Quaternion.identity);
-        newNote.GetComponentInChildren<SpriteRenderer>().sprite = noteSprites;
-        newNote.GetComponent<NoteBehavior>().Setup(note);
-        notes.Add(newNote.GetComponent<NoteBehavior>());
+        GameObject note = ObjectPool.Instance.GetObject();
+        note.transform.position = this.transform.position;
+        note.GetComponentInChildren<SpriteRenderer>().sprite = noteSprites;
+        notes.Add(note.GetComponent<NoteBehavior>());
+
+    }
+
+    public void DespawnNote(GameObject note)
+    {
+        ObjectPool.Instance.ReturnObject(note);
     }
 }

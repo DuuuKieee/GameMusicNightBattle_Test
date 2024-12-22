@@ -5,13 +5,30 @@ using UnityEngine;
 public class AudioManager : MonoBehaviour
 {
     public AudioSource AudioSource;
-    void Start()
+    public static AudioManager Instance;
+
+    void Awake()
     {
-        Invoke("PlayMusic", 2f);
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+    }
+    public void Initialize()
+    {
+        Invoke("PlayMusic", GameConfig.DELAY_MUSIC);
     }
     void PlayMusic()
     {
         AudioSource.Play();
+    }
+    public void EndMusic()
+    {
+        AudioSource.time = 0;
+        AudioSource.Stop();
     }
 
 }

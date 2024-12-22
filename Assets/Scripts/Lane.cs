@@ -8,6 +8,7 @@ using UnityEngine.UI;
 public class Lane : MonoBehaviour
 {
     public GameObject notePrefab;
+    public Animator fxAnim;
     public NoteLoader noteLoader;
     public Button ipnut;
     public Sprite noteSprites;
@@ -17,10 +18,10 @@ public class Lane : MonoBehaviour
     public List<double> timeStamps = new List<double>();
     public int noteRetrictions;
     private float startTime;
-    public double marginOfError = 0.1;
+    private double marginOfError = GameConfig.MARGIN_OF_ERROR;
 
-    int spawnIndex = 0;
-    int inputIndex = 0;
+    private int spawnIndex = 0;
+    private int inputIndex = 0;
 
     void Start()
     {
@@ -32,6 +33,11 @@ public class Lane : MonoBehaviour
 
     public void SetTimeStamps(Note[] noteList)
     {
+        spawnIndex = 0;
+        inputIndex = 0;
+        startTime = Time.time;
+        timeStamps.Clear();
+        notes.Clear();
         foreach (var note in noteList)
         {
             if (NoteLoader.Instance.uniqueNoteIDs.ToList().IndexOf(note.noteID) == noteRetrictions)
@@ -43,19 +49,19 @@ public class Lane : MonoBehaviour
 
     void Update()
     {
-        float currentTime = Time.time - startTime; // Điều chỉnh thời gian hiện tại
+        float currentTime = Time.time - startTime;
 
         if (spawnIndex < timeStamps.Count)
         {
             if (currentTime > timeStamps[spawnIndex])
             {
-                SpawnNote(noteLoader.notes.list[spawnIndex]);
+                SpawnNote();
                 spawnIndex++;
             }
         }
         if (inputIndex < timeStamps.Count)
         {
-            double timeStamp = timeStamps[inputIndex] + 2.2f;
+            double timeStamp = timeStamps[inputIndex] + 2.3f;
             if (currentTime > timeStamp + marginOfError)
             {
                 Miss();
@@ -64,13 +70,19 @@ public class Lane : MonoBehaviour
             }
         }
     }
-    void SpawnNote(Note note)
+
+    public void SpawnNote()
     {
-        GameObject newNote = Instantiate(notePrefab, this.transform.position, Quaternion.identity);
-        newNote.GetComponentInChildren<SpriteRenderer>().sprite = noteSprites;
-        newNote.GetComponent<NoteBehavior>().button = ipnut;
-        newNote.GetComponent<NoteBehavior>().Setup(note);
-        notes.Add(newNote.GetComponent<NoteBehavior>());
+        GameObject note = ObjectPool.Instance.GetObject();
+        note.transform.position = this.transform.position;
+        note.GetComponentInChildren<SpriteRenderer>().sprite = noteSprites;
+        notes.Add(note.GetComponent<NoteBehavior>());
+
+    }
+
+    public void DespawnNote(GameObject note)
+    {
+        ObjectPool.Instance.ReturnObject(note);
     }
 
    public void OnButtonPressed()
@@ -84,9 +96,10 @@ public class Lane : MonoBehaviour
 
             if (timeDifference <= marginOfError)
             {
-                Destroy(notes[inputIndex].gameObject);
+                DespawnNote(notes[inputIndex].gameObject);
                 playerAnimator.Play(playerAnimatorParameter);
                 Debug.Log($"Hit note {inputIndex} with margin {timeDifference}s");
+
                 if (timeDifference <= marginOfError / 2)
                 {
                     Hit(true);
@@ -95,6 +108,7 @@ public class Lane : MonoBehaviour
                 {
                     Hit(false);
                 }
+                fxAnim.Play("Fx_LinePopup");
                 inputIndex++;
             }
             else
