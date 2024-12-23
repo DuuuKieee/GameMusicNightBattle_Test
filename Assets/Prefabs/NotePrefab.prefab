@@ -28,7 +28,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0.89, y: 2.68, z: 0}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 1}
+  m_LocalScale: {x: 0.42, y: 0.42, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6850509397672695818}
@@ -46,8 +46,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ab0f862f97a53641936c3c78d4eaab1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  canBePressed: 0
-  button: {fileID: 0}
 --- !u!61 &3506906411109238222
 BoxCollider2D:
   m_ObjectHideFlags: 0

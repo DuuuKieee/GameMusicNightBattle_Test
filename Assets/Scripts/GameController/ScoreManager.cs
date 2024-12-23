@@ -13,6 +13,9 @@ public class ScoreManager : MonoBehaviour
     void Start()
     {
         Instance = this;
+        ObjectPool.Instance.InitializePool("PerfectPopup", fxPrefabs[0], 3);
+        ObjectPool.Instance.InitializePool("GoodPopup", fxPrefabs[1], 3);
+        ObjectPool.Instance.InitializePool("MissPopup", fxPrefabs[2], 3);
     }
     public void RestartHP()
     {

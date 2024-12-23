@@ -5,9 +5,8 @@ using UnityEngine;
 using System.Linq;
 using UnityEngine.UI;
 
-public class EnemyLane : MonoBehaviour
+public class OpponentLane : MonoBehaviour
 {
-    public GameObject notePrefab;
     public NoteLoader noteLoader;
     public Sprite noteSprites;
     public string playerAnimatorParameter;
@@ -15,23 +14,21 @@ public class EnemyLane : MonoBehaviour
     List<NoteBehavior> notes = new List<NoteBehavior>();
     public List<double> timeStamps = new List<double>();
     public int noteRetrictions;
-    private float startTime;
     public double marginOfError = 0.1;
     public bool isInteractable;
 
-    int spawnIndex = 0;
-    int inputIndex = 0;
+    private float _startTime;
+    private int _spawnIndex = 0;
+    private int _inputIndex = 0;
 
     void Start()
     {
-        startTime = Time.time;
+        _startTime = Time.time;
     }
 
     public void SetTimeStamps(Note[] noteList)
     {
-        spawnIndex = 0;
-        inputIndex = 0;
-        startTime = Time.time;
+        _startTime = Time.time;
         timeStamps.Clear();
         notes.Clear();
         foreach (var note in noteList)
@@ -43,34 +40,40 @@ public class EnemyLane : MonoBehaviour
         }
     }
 
+    public void ResetLane()
+    {
+        _spawnIndex = 0;
+        _inputIndex = 0;
+    }
+
     void Update()
     {
-        float currentTime = Time.time - startTime; // Điều chỉnh thời gian hiện tại
+        float currentTime = Time.time - _startTime; // Điều chỉnh thời gian hiện tại
 
-        if (spawnIndex < timeStamps.Count)
+        if (_spawnIndex < timeStamps.Count)
         {
-            if (currentTime > timeStamps[spawnIndex])
+            if (currentTime > timeStamps[_spawnIndex])
             {
                 SpawnNote();
-                spawnIndex++;
+                _spawnIndex++;
             }
         }
-        if (inputIndex < timeStamps.Count)
+        if (_inputIndex < timeStamps.Count)
         {
-            double timeStamp = timeStamps[inputIndex] + 2.3f;
+            double timeStamp = timeStamps[_inputIndex] + 2.3f;
             double timeDifference = Math.Abs(currentTime - timeStamp);
 
             if (timeDifference <= marginOfError)
             {
-                DespawnNote(notes[inputIndex].gameObject);
+                DespawnNote(notes[_inputIndex].gameObject);
                 playerAnimator.Play(playerAnimatorParameter);
-                inputIndex++;
+                _inputIndex++;
             }
         }
     }
     public void SpawnNote()
     {
-        GameObject note = ObjectPool.Instance.GetObject();
+        GameObject note = ObjectPool.Instance.GetObject("Note");
         note.transform.position = this.transform.position;
         note.GetComponentInChildren<SpriteRenderer>().sprite = noteSprites;
         notes.Add(note.GetComponent<NoteBehavior>());
@@ -79,6 +82,6 @@ public class EnemyLane : MonoBehaviour
 
     public void DespawnNote(GameObject note)
     {
-        ObjectPool.Instance.ReturnObject(note);
+        ObjectPool.Instance.ReturnObject("Note",note);
     }
 }

@@ -10,7 +10,7 @@ public class NoteBehavior : MonoBehaviour
         transform.position += Vector3.down * fallSpeed * Time.deltaTime;
         if (transform.position.y < -5.0f)
         {
-            ObjectPool.Instance.ReturnObject(gameObject);
+            ObjectPool.Instance.ReturnObject("Note", gameObject);
             
         }
         

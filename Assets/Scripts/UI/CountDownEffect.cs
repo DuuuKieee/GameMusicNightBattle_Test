@@ -21,7 +21,6 @@ public class CountdownEffect : MonoBehaviour
     {
         if (countdownSprites.Length == 0 || mainImage == null || effectImage == null || audioSource == null)
         {
-            Debug.LogError("Hãy đảm bảo tất cả các thành phần cần thiết được gắn kết trong Inspector.");
             return;
         }
         SetActiveCountdown(false);
@@ -38,8 +37,6 @@ public class CountdownEffect : MonoBehaviour
             effectImage.sprite = countdownSprites[i];
             effectImage.transform.localScale = Vector3.one;
             effectImage.color = new Color(1, 1, 1, 1);
-
-            // Phát âm thanh nếu tồn tại
             if (i < countdownSounds.Length && countdownSounds[i] != null)
             {
                 audioSource.PlayOneShot(countdownSounds[i]);

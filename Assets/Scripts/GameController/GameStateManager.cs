@@ -42,11 +42,11 @@ public class GameStateManager : MonoBehaviour
     }
     void EndGame()
     {
-        NoteLoader.Instance.Finalize();
-        ObjectPool.Instance.ClearPool();
+        NoteLoader.Instance.SetEndGame();
+        ObjectPool.Instance.SetDeactiveAll();
         AudioManager.Instance.EndMusic();
         ScoreManager.Instance.RestartHP();
-        StopCoroutine(PlayingRoutine());
+        StopAllCoroutines();
     }
     
     public void StartBattle()
@@ -57,7 +57,6 @@ public class GameStateManager : MonoBehaviour
     IEnumerator PlayingRoutine()
     {
         yield return new WaitForSeconds(NoteLoader.Instance.lastNoteTime);
-        if (gameState== GameState.Playing) yield break;
         ChaneStateGame(GameState.End);
     }
 
