@@ -27,7 +27,6 @@ public class AudioManager : MonoBehaviour
     }
     public void EndMusic()
     {
-        AudioSource.time = 0;
         AudioSource.Stop();
     }
 

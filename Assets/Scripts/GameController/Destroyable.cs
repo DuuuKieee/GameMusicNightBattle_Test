@@ -4,5 +4,5 @@ using UnityEngine;
 
 public class Destroyable : MonoBehaviour
 {
-public void DestroyMe() { Destroy(gameObject); }
+public void DestroyMe() { gameObject.SetActive(false); }
 }
