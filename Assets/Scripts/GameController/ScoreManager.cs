@@ -26,12 +26,13 @@ public class ScoreManager : MonoBehaviour
         hpSlider.value += 1;
         if (_isPerfect)
         {
-
-            Instantiate(fxPrefabs[0], new Vector3(0, 3, 0), Quaternion.identity);
+            GameObject popup = ObjectPool.Instance.GetObject("PerfectPopup");
+            popup.transform.position = new Vector3(0, 3, 0);
         }
         else
         {
-            Instantiate(fxPrefabs[1], new Vector3(0, 3, 0), Quaternion.identity);
+            GameObject popup = ObjectPool.Instance.GetObject("GoodPopup");
+            popup.transform.position = new Vector3(0, 3, 0);
         }
         // Instance.hitSFX.Play();
     }
@@ -42,7 +43,8 @@ public class ScoreManager : MonoBehaviour
         {
             GameStateManager.Instance.ChaneStateGame(GameState.End);
         }
-        Instantiate(fxPrefabs[2], new Vector3(0, 3, 0), Quaternion.identity);
+        GameObject popup = ObjectPool.Instance.GetObject("MissPopup");
+        popup.transform.position = new Vector3(0, 3, 0);
         // Instance.missSFX.Play();    
     }
 }

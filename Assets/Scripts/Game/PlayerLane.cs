@@ -94,7 +94,7 @@ public class PlayerLane : MonoBehaviour
 
         if (_inputIndex < timeStamps.Count)
         {
-            double timeStamp = timeStamps[_inputIndex] + 2.2f;
+            double timeStamp = timeStamps[_inputIndex] + 2.3f;
             double timeDifference = Math.Abs(currentTime - timeStamp);
 
             if (timeDifference <= _marginOfError)
