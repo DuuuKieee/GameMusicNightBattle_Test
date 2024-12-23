@@ -5,9 +5,8 @@ using UnityEngine;
 using System.Linq;
 using UnityEngine.UI;
 
-public class Lane : MonoBehaviour
+public class PlayerLane : MonoBehaviour
 {
-    public GameObject notePrefab;
     public Animator fxAnim;
     public NoteLoader noteLoader;
     public Button ipnut;
@@ -17,25 +16,24 @@ public class Lane : MonoBehaviour
     List<NoteBehavior> notes = new List<NoteBehavior>();
     public List<double> timeStamps = new List<double>();
     public int noteRetrictions;
-    private float startTime;
-    private double marginOfError = GameConfig.MARGIN_OF_ERROR;
+    private float _startTime;
+    private double _marginOfError = GameConfig.MARGIN_OF_ERROR;
 
-    private int spawnIndex = 0;
-    private int inputIndex = 0;
+    private int _spawnIndex = 0;
+    private int _inputIndex = 0;
 
     void Start()
     {
-        startTime = Time.time;
+        _startTime = Time.time;
 
-        // Gắn hàm xử lý cho Button UI (nếu cần qua mã)
         ipnut.onClick.AddListener(OnButtonPressed);
     }
 
     public void SetTimeStamps(Note[] noteList)
     {
-        spawnIndex = 0;
-        inputIndex = 0;
-        startTime = Time.time;
+        _spawnIndex = 0;
+        _inputIndex = 0;
+        _startTime = Time.time;
         timeStamps.Clear();
         notes.Clear();
         foreach (var note in noteList)
@@ -49,31 +47,36 @@ public class Lane : MonoBehaviour
 
     void Update()
     {
-        float currentTime = Time.time - startTime;
+        float currentTime = Time.time - _startTime;
 
-        if (spawnIndex < timeStamps.Count)
+        if (_spawnIndex < timeStamps.Count)
         {
-            if (currentTime > timeStamps[spawnIndex])
+            if (currentTime > timeStamps[_spawnIndex])
             {
                 SpawnNote();
-                spawnIndex++;
+                _spawnIndex++;
             }
         }
-        if (inputIndex < timeStamps.Count)
+        if (_inputIndex < timeStamps.Count)
         {
-            double timeStamp = timeStamps[inputIndex] + 2.3f;
-            if (currentTime > timeStamp + marginOfError)
+            double timeStamp = timeStamps[_inputIndex] + 2.3f;
+            if (currentTime > timeStamp + _marginOfError)
             {
                 Miss();
-                Debug.Log($"Missed note {inputIndex}");
-                inputIndex++;
+                Debug.Log($"Missed note {_inputIndex}");
+                _inputIndex++;
             }
         }
+    }
+    public void ResetLane()
+    {
+        _spawnIndex = 0;
+        _inputIndex = 0;
     }
 
     public void SpawnNote()
     {
-        GameObject note = ObjectPool.Instance.GetObject();
+        GameObject note = ObjectPool.Instance.GetObject("Note");
         note.transform.position = this.transform.position;
         note.GetComponentInChildren<SpriteRenderer>().sprite = noteSprites;
         notes.Add(note.GetComponent<NoteBehavior>());
@@ -82,25 +85,25 @@ public class Lane : MonoBehaviour
 
     public void DespawnNote(GameObject note)
     {
-        ObjectPool.Instance.ReturnObject(note);
+        ObjectPool.Instance.ReturnObject("Note" ,note);
     }
 
    public void OnButtonPressed()
     {
-        float currentTime = Time.time - startTime;
+        float currentTime = Time.time - _startTime;
 
-        if (inputIndex < timeStamps.Count)
+        if (_inputIndex < timeStamps.Count)
         {
-            double timeStamp = timeStamps[inputIndex] + 2.2f;
+            double timeStamp = timeStamps[_inputIndex] + 2.2f;
             double timeDifference = Math.Abs(currentTime - timeStamp);
 
-            if (timeDifference <= marginOfError)
+            if (timeDifference <= _marginOfError)
             {
-                DespawnNote(notes[inputIndex].gameObject);
+                DespawnNote(notes[_inputIndex].gameObject);
                 playerAnimator.Play(playerAnimatorParameter);
-                Debug.Log($"Hit note {inputIndex} with margin {timeDifference}s");
+                Debug.Log($"Hit note {_inputIndex} with margin {timeDifference}s");
 
-                if (timeDifference <= marginOfError / 2)
+                if (timeDifference <= _marginOfError / 2)
                 {
                     Hit(true);
                 }
@@ -109,11 +112,11 @@ public class Lane : MonoBehaviour
                     Hit(false);
                 }
                 fxAnim.Play("Fx_LinePopup");
-                inputIndex++;
+                _inputIndex++;
             }
             else
             {
-                Debug.Log($"Inaccurate hit note {inputIndex} with margin {timeDifference}s");
+                Debug.Log($"Inaccurate hit note {_inputIndex} with margin {timeDifference}s");
             }
         }
     }

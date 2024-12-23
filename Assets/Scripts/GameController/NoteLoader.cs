@@ -7,8 +7,9 @@ public class NoteLoader : MonoBehaviour
     public static NoteLoader Instance { get; private set; }
     public NoteList notes = new NoteList();
     public int[] uniqueNoteIDs;
-    public Lane[] lanes;
-    public EnemyLane[] enemyLanes;
+    public GameObject notePrefab;
+    public PlayerLane[] lanes;
+    public OpponentLane[] opponentLanes;
     public float lastNoteTime = 0;
 
     void Awake()
@@ -20,6 +21,10 @@ public class NoteLoader : MonoBehaviour
         }
         Instance = this;
         DontDestroyOnLoad(gameObject); // Optional: Keep this instance alive across scenes
+    }
+    void Start()
+    {
+        ObjectPool.Instance.InitializePool("Note", notePrefab, 10);
     }
 
     public void Initialize()
@@ -34,25 +39,29 @@ public class NoteLoader : MonoBehaviour
         uniqueNoteIDs = new int[uniqueIDs.Count];
         uniqueIDs.CopyTo(uniqueNoteIDs);
         System.Array.Sort(uniqueNoteIDs);
-        foreach (Lane lane in lanes)
+        foreach (PlayerLane lane in lanes)
         {
             lane.SetTimeStamps(notes.list);
         }
-        foreach (EnemyLane lane in enemyLanes)
+        foreach (OpponentLane lane in opponentLanes)
         {
             lane.SetTimeStamps(notes.list);
         }
         lastNoteTime = notes.list.Last().timeAppear + notes.list.Last().duration + GameConfig.DELAY_MUSIC + 1;
     }
-    public void Finalize()
+    public void SetEndGame()
     {
-        foreach (Lane lane in lanes)
+        foreach (PlayerLane lane in lanes)
         {
+
             lane.timeStamps.Clear();
+            lane.ResetLane();
         }
-        foreach (EnemyLane lane in enemyLanes)
+        foreach (OpponentLane lane in opponentLanes)
         {
             lane.timeStamps.Clear();
+            lane.ResetLane();
+            
         }
     }
 }
